@@ -44,7 +44,12 @@ void scrollText(const char *p)
   uint8_t cBuf[8];  // this should be ok for all built-in fonts
 
   PRINTS("\nScrolling text");
-  mx.clear();
+  //mx.clear();
+  // mx.control(MD_MAX72XX::UPDATE, MD_MAX72XX::OFF);
+  // mx.transform(MD_MAX72XX::TRC);
+  // mx.control(MD_MAX72XX::UPDATE, MD_MAX72XX::ON);
+  // mx.transform(MD_MAX72XX::TRC);
+
 
   while (*p != '\0')
   {
@@ -130,7 +135,7 @@ void columns()
   for (uint8_t col=0; col<mx.getColumnCount(); col++)
   {
     mx.setColumn(col, 0xff);
-    delay(DELAYTIME/MAX_DEVICES);
+    delay(300);
     mx.setColumn(col, 0x00);
   }
 }
@@ -589,43 +594,45 @@ void setup(){
 
   if (!mx.begin())
     PRINTS("\nMD_MAX72XX initialization failed");
+    mx.control(MD_MAX72XX::INTENSITY, 0);
+    
+
 }
 
 void loop(){
 
-  mx.control(MD_MAX72XX::INTENSITY, 0);
-
   scrollText("Graphics");
-  zeroPointSet();
-  rows();
-  columns();
-  cross();
-  stripe();//
-  checkboard();
-  bullseye();
-  bounce();//
-  spiral();
+  delay(2000);
+  // zeroPointSet();
+  // rows();
+  // columns();
+  // cross();
+  // stripe();//
+  // checkboard();
+  // bullseye();
+  // bounce();//
+  // spiral();
 
-  mx.control(MD_MAX72XX::INTENSITY, 0);
+  // mx.control(MD_MAX72XX::INTENSITY, 0);
 
-  scrollText("Control");
-  intensity();
-  scanLimit();
-  blinking();
+  // scrollText("Control");
+  // //intensity();
+  // scanLimit();
+  // //blinking();
 
-  mx.control(MD_MAX72XX::INTENSITY, 0);
+  // mx.control(MD_MAX72XX::INTENSITY, 0);
 
-  scrollText("Transform");
-  transformation1();
-  transformation2();
+  // scrollText("Transform");
+  // transformation1();
+  // transformation2();
 
-  mx.control(MD_MAX72XX::INTENSITY, 0);
+  // mx.control(MD_MAX72XX::INTENSITY, 0);
 
-  scrollText("Charset");
-  wrapText();
-  showCharset();
+  // scrollText("Charset");
+  // wrapText();
+  // showCharset();
 
-  mx.control(MD_MAX72XX::INTENSITY, 0);
+  // mx.control(MD_MAX72XX::INTENSITY, 0);
 
 }
 
