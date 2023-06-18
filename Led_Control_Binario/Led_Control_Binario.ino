@@ -12,13 +12,8 @@
 
 LedControl lc=LedControl(DATA_PIN, CLK_PIN, CS_PIN, MAX_DEVICES);
 
-int Hora;
-int Min;
-int Seg;
-int Dia;
-int Mes;
-int Ano;
-
+int Hora, Min, Seg, Dia, Mes, Ano;
+int dezenaH, unidadeH, dezenaM, unidadeM;
 
 void setup() {
   Serial.begin(115200);
@@ -31,7 +26,6 @@ void setup() {
 
 }//end setup
 
-
 void getTime(){
   tmElements_t tm;
   RTC.read(tm);
@@ -41,7 +35,7 @@ void getTime(){
   Dia = tm.Day;
   Mes = tm.Month;
   Ano = tmYearToCalendar(tm.Year);
-}
+}//end get time
 
 void writeArduinoOnMatrix(byte addr, byte digi) {
 
@@ -63,12 +57,10 @@ bool blinkDots(){
 
 }//end blink dots
 
-void loop() { 
-
+void trataDigitos(){
   // Hora = (millis()/10000)%23;
   // Minuto = (millis()/1000)%60;
 
-  int dezenaH, unidadeH, dezenaM, unidadeM;
   getTime();
 
   dezenaH = Hora;
@@ -86,14 +78,23 @@ void loop() {
   // Serial.print(":");
   // Serial.print(dezenaM);
   // Serial.println(unidadeM);
-  // Serial.println(); 
+  // Serial.println();
+
+}//end trata digitos
+
+
+void loop() {  
 
   if(!blinkDots()){
+    trataDigitos();
     writeArduinoOnMatrix(0,unidadeM);
     writeArduinoOnMatrix(1,dezenaM);
     writeArduinoOnMatrix(2,unidadeH);
     writeArduinoOnMatrix(3,dezenaH);
   }
+
+  //lc.setLed(int addr, int row, int col, boolean state)
+
 
   delay(1);
   

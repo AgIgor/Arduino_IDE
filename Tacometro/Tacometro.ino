@@ -15,7 +15,7 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(pinTach), countPulses, RISING);
   
   // Inicializa a porta serial para exibição de informações
-  Serial.begin(115200);
+  Serial.begin(9600);
 }
 
 void loop() {

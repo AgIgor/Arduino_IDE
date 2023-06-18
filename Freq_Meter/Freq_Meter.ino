@@ -1,4 +1,4 @@
-#define pulse_ip 3
+#define pulse_ip 2
 
 int ontime,offtime,duty;
 float freq,period;
@@ -6,7 +6,7 @@ float freq,period;
 void setup(){
   pinMode(pulse_ip,INPUT);
   pinMode(LED_BUILTIN,OUTPUT);
-  Serial.begin(115200);
+  Serial.begin(9600);
 }
 void loop(){
   ontime = pulseIn(pulse_ip,HIGH);
