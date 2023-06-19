@@ -1,9 +1,9 @@
 #include <LiquidCrystal_I2C.h>
-#include <Encoder.h>
+// #include <Encoder.h>
 
 LiquidCrystal_I2C lcd(0x27,16,2);
-Encoder myEnc(5,6);
-long oldPosition  = -999;
+// Encoder myEnc(5,6);
+// long oldPosition  = -999;
 
 #define maxRPM 5000
 #define mutplRPM 10
