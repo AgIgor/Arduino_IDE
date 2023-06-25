@@ -18,21 +18,19 @@ bool down_bot = true;
 double newSetpoint;
 bool err = false;
 
-
-
-float Vzero = 2.56;
-float K = 0.01;
-float B = 0.11;
-float Vbase = 4.88;
+float Vzero = 2.42;//2.56
+float K = 0.01;//
+float B = 0.12;//0.11
+float Vbase = 4.80;//4.88
 float Vin = 0;
 float I = 0;
 
 
-#define kp 5.5 //0.5
-#define ki 5.2 //0.2
-#define kd 5.1 //0.1
+float kp = 0.3; //5.5
+float ki = 2.0; //5.2
+float kd = 3.5; //5.1
 
-double setpoint = 0.1;   // Valor de corrente desejado (em Ampères)
+double setpoint = 0.0;   // Valor de corrente desejado (em Ampères)
 double maxSet = 2.5;
 
 double output = 0.0;     // Valor de saída do controlador (em PWM)
@@ -46,6 +44,28 @@ double output_max = 255.0;
 
 long delayMillis;
 #define DELAYPRINT 200
+
+
+void getSerial(){
+  if (Serial.available() > 0) { // Verifica se há dados disponíveis no monitor serial
+    String input = Serial.readStringUntil('\n'); // Lê a string enviada pelo monitor serial
+    input.trim(); // Remove espaços em branco do início e do fim da string
+    int index = input.indexOf("=");
+    if (input.startsWith("kp")) {
+      kp = input.substring(index + 1).toFloat();
+    }
+    else if (input.startsWith("ki")) {
+      ki = input.substring(index + 1).toFloat();
+    }
+    else if(input.startsWith("kd")){
+      kd = input.substring(index + 1).toFloat();
+    }
+    else if(input.startsWith("set")){
+      setpoint = input.substring(index + 1).toFloat();
+    }    
+  }//end if serial available
+  delay(1);  
+}
 
 void setup() {
   InitTimersSafe();
@@ -77,6 +97,7 @@ void loop() {
   float media = 0;
 
   // setpoint = map(analogRead(pot_pin), 0, 1023, 0, 250) * 0.01;
+  getSerial();
   
   if(!digitalRead(up_pin) && up_bot){
     setpoint = setpoint + 0.05;
@@ -147,14 +168,20 @@ void loop() {
   if(millis() - delayMillis >= DELAYPRINT){
     delayMillis = millis(); 
     // lcd.clear();
-    // Serial.print("I = ");
-    // Serial.print(media);
-
-    // Serial.print(" error = ");
-    // Serial.print(error);
-
-    // Serial.print(" out = ");
-    // Serial.println(output);
+     //Serial.print("Set = ");
+     //Serial.print(setpoint);
+     //Serial.print(" I = ");
+     //Serial.print(media);
+     //Serial.print(" error = ");
+     //Serial.print(error);
+     //Serial.print(" out = ");
+     //Serial.print(output);
+     Serial.print(" kp = ");
+     Serial.print(kp);
+     Serial.print(" ki = ");
+     Serial.print(ki);
+     Serial.print(" kd = ");
+     Serial.println(kd);
 
     lcd.setCursor(0, 0);
     lcd.print("I ");lcd.print(media);lcd.print(" ");
