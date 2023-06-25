@@ -13,6 +13,7 @@ LiquidCrystal_I2C lcd(0x27,16,2);
 #define timeHallRead 200
 
 #define HallPin 2
+#define modePin 7
 
 volatile unsigned int pulseCount = 0;  // Variável para armazenar a contagem de pulsos
 unsigned int rpm = 0;  // Variável para armazenar as RPM calculadas
@@ -58,7 +59,16 @@ char gauge_string[gauge_size_chars+1]; // string that will include all the gauge
 void setup(){
   Serial.begin(9600);
   pinMode(HallPin, INPUT_PULLUP);
+  pinMode(modePin, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(HallPin), countPulse, RISING);
+
+  bool mode = !digitalRead(modePin);
+
+  if(mode)
+  Serial.println("mode 1");
+  else
+  Serial.println("mode 2");
+
 
   lcd.init();                       // initialize the 16x2 lcd module
   lcd.createChar(7, gauge_empty);   // middle empty gauge
