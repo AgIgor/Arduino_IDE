@@ -1,53 +1,56 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
+#include <WiFiManager.h>
+#include <ESP8266mDNS.h>
 //#include <Servo.h>
 #include "root.h"
-
 #define pwmOut 2
-
-
-const char* ssid = "VIVOFIBRA-9501";
-const char* password = "rgw7ucm3GT";
-
+//const char* ssid = "VIVOFIBRA-9501";
+//const char* password = "rgw7ucm3GT";
 byte pwm;
-
 
 ESP8266WebServer server(80);
 //Servo myservo;
 
 void setup() {
+  WiFiManager wifiManager;
   //myservo.attach(2);  // Conecte o servo ao pino GPIO2 (D4
   pinMode(pwmOut, OUTPUT);
   analogWrite(pwmOut, 0);
   delay(10);
-
-  // Conecte-se à rede Wi-Fi
-  Serial.println();
-  Serial.println();
-  Serial.print("Conectando a ");
-  Serial.println(ssid);
-
-  WiFi.begin(ssid, password);
-
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
+  if (!wifiManager.autoConnect("ESP8266-Config")) {
+    delay(3000);
+    ESP.restart();
   }
-  Serial.println("");
-  Serial.println("WiFi conectado");
-  Serial.println(WiFi.localIP());
 
-  // Inicialize o servidor web
+//  WiFi.begin(ssid, password);
+//  while (WiFi.status() != WL_CONNECTED) {
+//    delay(500);
+//    Serial.print(".");
+//  }
+
+//  IPAddress ip(192, 168, 15, 123);
+//  IPAddress gateway(192, 168, 15, 1);
+//  IPAddress subnet(255, 255, 255, 0);
+//  IPAddress dns(8, 8, 8, 8);
+//  WiFi.config(ip, gateway, subnet, dns);
+
+  if (!MDNS.begin("esp8266")) {
+    while (1) { delay(1000); }
+  }
+
   server.on("/", HTTP_GET, handleRoot);
   server.on("/move", HTTP_GET, handleMove);
   server.on("/read", HTTP_GET, handleRead);
   server.onNotFound(handleNotFound);
   server.begin();
-  Serial.println("Servidor web iniciado");
+  MDNS.addService("http", "tcp", 80);
 }
 
 void loop() {
+  MDNS.update();
   server.handleClient();
+  delay(5);
 }
 
 void handleRead() {

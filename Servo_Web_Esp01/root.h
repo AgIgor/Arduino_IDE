@@ -57,6 +57,11 @@ const char root[] PROGMEM = R"=====(
             console.error('Error:', error);
         }
     }
+
+    setInterval(async() => {
+       await read();
+    }, 2000);
+  
 </script>
 </html>
 )=====";
