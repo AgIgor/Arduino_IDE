@@ -17,6 +17,7 @@ const char root[] PROGMEM = R"=====(
 
     const value = document.querySelector("#value");
     const input = document.querySelector("#pi_input");
+    const title = document.querySelector("title");
 
     async function read(){
         try{
@@ -24,8 +25,9 @@ const char root[] PROGMEM = R"=====(
                                   .then(response => response.text())
                                     //.then(result => console.log(result))
                                   .then(result =>{
-                                        input.value = result
-                                        value.textContent = result
+                                        input.value = result;
+                                        value.textContent = result;
+                                        title.textContent = `Pwm ${value.textContent}`;
                                     })
                                   .catch(error => console.log('error', error));  
         }
@@ -38,7 +40,7 @@ const char root[] PROGMEM = R"=====(
     
     input.addEventListener("input", (event) => {
         value.textContent = event.target.value;
-        document.querySelector("title").textContent = `Pwm ${value.textContent}`;
+        title.textContent = `Pwm ${value.textContent}`;
         sendPos();
     });
         
