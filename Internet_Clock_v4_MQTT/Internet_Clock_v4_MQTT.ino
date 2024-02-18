@@ -6,7 +6,7 @@
 const char *ssid     = "VIVOFIBRA-9501";
 const char *password = "rgw7ucm3GT";
 
-#define brilhoMax 250
+#define brilhoMax 230
 #define brilhoMin 2
 
 #define luxMax 3
@@ -65,15 +65,15 @@ void wifiConn();
 bool luxRead();
 void piscaPonto();
 void display();
-void limpaPixels();
+// void limpaPixels();
 void displayTemp();
 void nextRainbowColor();
-void messageReceived(String &topic, String &payload);
 void connect();
 
 byte r = 255;
 byte g = 0;
 byte b = 0;
+
 void nextRainbowColor() {
   if (r > 0 && b == 0) {
     r--;
@@ -91,19 +91,19 @@ void nextRainbowColor() {
 
 void connect() {
 
-  Serial.print("\nconnecting...");
+  // Serial.print("\nconnecting...");
   while (!client.connect("internet_clock#v.4", "", "")) {
-    Serial.print(".");
+    // Serial.print(".");
     delay(1000);
   }
-  Serial.println("\nconnected!");
-  client.subscribe("/mqtt/internet_clock_v.4/config/#");
+  // Serial.println("\nconnected!");
+  // client.subscribe("/mqtt/internet_clock_v.4/config/#");
 
 }
 
-void messageReceived(String &topic, String &payload) {
+/* void messageReceived(String &topic, String &payload) {
   //Serial.println("incoming: " + topic + " - " + payload);
-}
+} */
 
 void displayTemp(){
     for (int ID = 0; ID < 7; ID++){
@@ -151,7 +151,7 @@ void getNTP(){
       dezenaM = dezenaM/10;
       unidadeM = unidadeM % 10;
 
-      limpaPixels();
+      // limpaPixels();
       delay(1);
       pixels.clear();
 
@@ -195,12 +195,12 @@ void getAHT10(){
 //end get AHT
 
 void wifiConn(){
-  IPAddress ip(192, 168, 15, 7);
-  IPAddress gateway(192, 168, 15, 1);
-  IPAddress subnet(255, 255, 255, 0);
-  IPAddress dns(8, 8, 8, 8);
-  WiFi.config(ip, gateway, subnet, dns);
-  WiFi.setHostname("InternetClock");
+  // IPAddress ip(192, 168, 15, 7);
+  // IPAddress gateway(192, 168, 15, 1);
+  // IPAddress subnet(255, 255, 255, 0);
+  // IPAddress dns(8, 8, 8, 8);
+  // WiFi.config(ip, gateway, subnet, dns);
+  // WiFi.setHostname("InternetClock");
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
   WiFi.setSleep(false);//
@@ -266,7 +266,7 @@ void piscaPonto(){
 }
 //end pisca pontos
 
-void limpaPixels(){
+/* void limpaPixels(){
   static bool modeDirection;
 
   if(modeDirection){
@@ -285,7 +285,7 @@ void limpaPixels(){
     modeDirection = !modeDirection;
   }
 }
-//end limpa pixels
+//end limpa pixels */
 
 void setup() {
 
@@ -310,7 +310,7 @@ void setup() {
   wifiConn();//
 
   client.begin("mqtt.eclipseprojects.io", net);
-  client.onMessage(messageReceived);
+  //client.onMessage(messageReceived);
   connect();
 
   delay(50);
@@ -326,19 +326,15 @@ void loop() {
   client.loop();
   delay(10);
 
-  if (!client.connected()) {
-    connect();
-  }
-
-  if(millis() - msDelay > 1000){
+  if (!client.connected()) connect();
+  if (WiFi.status() != WL_CONNECTED) wifiConn();
+  if(millis() - msDelay > 500){
     msDelay = millis();
     getAHT10();
   }
 
   while(modeDisplay == 0){//display clock
-    // if((millis()/1000)%60){//wifi check
-    //   if(WiFi.status() != WL_CONNECTED) wifiConn();
-    // }
+
     if((millis()/1000)%2){//second check
       if(Trigger){
         Trigger = false;
@@ -348,7 +344,7 @@ void loop() {
         }else{
           IntervaloC = 0;
           modeDisplay = 1;
-          limpaPixels();
+          // limpaPixels();
           delay(10);
           pixels.clear();
           break;
@@ -372,6 +368,7 @@ void loop() {
   }//mode display 0
 
   while(modeDisplay == 1){//display temp
+
     if((millis()/1000)%2){
       if(Trigger){
         Trigger = false;
@@ -381,7 +378,7 @@ void loop() {
         }else{
           IntervaloT = 0;
           modeDisplay = 0;
-          limpaPixels();
+          // limpaPixels();
           delay(10);
           pixels.clear();
           break;
