@@ -2,6 +2,7 @@
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
 #include <Wire.h>
+#include <ArduinoJson.h>
 
 const char *ssid     = "VIVOFIBRA-9501";
 const char *password = "rgw7ucm3GT";
@@ -12,9 +13,9 @@ const char *password = "rgw7ucm3GT";
 #define luxMax 3
 #define luxMin 2
 
-#define delayClock 5//120
-#define delayTemp 5//30
-#define delayHumi 5//30
+#define delayClock 3//120
+#define delayTemp 2//30
+#define delayHumi 2//30
 
 #include <NTPClient.h>
 const long utcOffsetInSeconds =  -10800;
@@ -65,7 +66,7 @@ void wifiConn();
 bool luxRead();
 void piscaPonto();
 void display();
-// void limpaPixels();
+void limpaPixels();
 void displayTemp();
 void nextRainbowColor();
 void connect();
@@ -151,7 +152,7 @@ void getNTP(){
       dezenaM = dezenaM/10;
       unidadeM = unidadeM % 10;
 
-      // limpaPixels();
+      limpaPixels();
       delay(1);
       pixels.clear();
 
@@ -171,13 +172,23 @@ void getAHT10(){
   byte Temp = t;
   byte Humi = h;
 
-  char ct[5];
-  char *char_temp = dtostrf(t,4,2,ct);
-  client.publish("/mqtt/internet_clock_v.4/temperature", char_temp);
+  // char ct[5];
+  // char *char_temp = dtostrf(t,4,2,ct);
+  // client.publish("/mqtt/internet_clock_v.4/temperature", char_temp);
   
-  char ch[5];
-  char *char_humi = dtostrf(h,4,2,ch);
-  client.publish("/mqtt/internet_clock_v.4/humidity",char_humi);
+  // char ch[5];
+  // char *char_humi = dtostrf(h,4,2,ch);
+  // client.publish("/mqtt/internet_clock_v.4/humidity",char_humi);
+
+  // char out[50];
+  // sprintf(out, "{\"temperature\":%.1f,\"humidity\":%.1f}", t, h);
+  JsonDocument doc;
+  doc["temperature"] = serialized(String(t,1));
+  doc["humidity"] = serialized(String(h,1));
+
+  char saida[sizeof(doc)];
+  serializeJson(doc, saida);
+  client.publish("/mqtt/internet_clock_v.4/sensor",saida, true, 0);
 
   if(Temp > 60) Temp = 60;
   if(Humi > 90) Humi = 90;
@@ -266,7 +277,7 @@ void piscaPonto(){
 }
 //end pisca pontos
 
-/* void limpaPixels(){
+void limpaPixels(){
   static bool modeDirection;
 
   if(modeDirection){
@@ -285,7 +296,7 @@ void piscaPonto(){
     modeDirection = !modeDirection;
   }
 }
-//end limpa pixels */
+//end limpa pixels
 
 void setup() {
 
@@ -344,7 +355,7 @@ void loop() {
         }else{
           IntervaloC = 0;
           modeDisplay = 1;
-          // limpaPixels();
+          limpaPixels();
           delay(10);
           pixels.clear();
           break;
@@ -378,7 +389,7 @@ void loop() {
         }else{
           IntervaloT = 0;
           modeDisplay = 0;
-          // limpaPixels();
+          limpaPixels();
           delay(10);
           pixels.clear();
           break;
