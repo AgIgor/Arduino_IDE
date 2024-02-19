@@ -10,12 +10,12 @@ const char *password = "rgw7ucm3GT";
 #define brilhoMax 230
 #define brilhoMin 2
 
-#define luxMax 3
+#define luxMax 4
 #define luxMin 2
 
-#define delayClock 3//120
-#define delayTemp 2//30
-#define delayHumi 2//30
+#define delayClock 10//120
+#define delayTemp 5//30
+#define delayHumi 5//30
 
 #include <NTPClient.h>
 const long utcOffsetInSeconds =  -10800;
@@ -172,23 +172,28 @@ void getAHT10(){
   byte Temp = t;
   byte Humi = h;
 
-  // char ct[5];
-  // char *char_temp = dtostrf(t,4,2,ct);
-  // client.publish("/mqtt/internet_clock_v.4/temperature", char_temp);
+/*
+  char ct[5];
+  char *char_temp = dtostrf(t,4,2,ct);
+  client.publish("/mqtt/internet_clock_v.4/temperature", char_temp);
   
-  // char ch[5];
-  // char *char_humi = dtostrf(h,4,2,ch);
-  // client.publish("/mqtt/internet_clock_v.4/humidity",char_humi);
+  char ch[5];
+  char *char_humi = dtostrf(h,4,2,ch);
+  client.publish("/mqtt/internet_clock_v.4/humidity",char_humi);
 
-  // char out[50];
-  // sprintf(out, "{\"temperature\":%.1f,\"humidity\":%.1f}", t, h);
+  char out[50];
+  sprintf(out, "{\"temperature\":%.1f,\"humidity\":%.1f}", t, h);
+*/
+
   JsonDocument doc;
   doc["temperature"] = serialized(String(t,1));
   doc["humidity"] = serialized(String(h,1));
 
   char saida[sizeof(doc)];
   serializeJson(doc, saida);
+  delay(10);
   client.publish("/mqtt/internet_clock_v.4/sensor",saida, true, 0);
+  delay(10);
 
   if(Temp > 60) Temp = 60;
   if(Humi > 90) Humi = 90;
@@ -338,7 +343,7 @@ void loop() {
   delay(10);
 
   if (!client.connected()) connect();
-  if (WiFi.status() != WL_CONNECTED) wifiConn();
+  //if (WiFi.status() != WL_CONNECTED) wifiConn();
   if(millis() - msDelay > 500){
     msDelay = millis();
     getAHT10();
