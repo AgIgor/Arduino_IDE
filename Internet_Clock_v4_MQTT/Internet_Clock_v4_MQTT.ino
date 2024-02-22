@@ -10,16 +10,16 @@ const char *password = "rgw7ucm3GT";
 #define brilhoMax 230
 #define brilhoMin 2
 
-#define luxMax 4
+#define luxMax 3
 #define luxMin 2
 
-#define delayClock 10//120
-#define delayTemp 5//30
-#define delayHumi 5//30
+#define delayClock 6//120
+#define delayTemp 4//30
+#define delayHumi 4//30
 
 #include <NTPClient.h>
-const long utcOffsetInSeconds =  -10800;
-char daysOfTheWeek[7][12] = {"Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sabado"};
+#define utcOffsetInSeconds -10800
+// char daysOfTheWeek[7][12] = {"Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sabado"};
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "south-america.pool.ntp.org", utcOffsetInSeconds,60000);
 
@@ -191,9 +191,8 @@ void getAHT10(){
 
   char saida[sizeof(doc)];
   serializeJson(doc, saida);
-  delay(10);
   client.publish("/mqtt/internet_clock_v.4/sensor",saida, true, 0);
-  delay(10);
+  delay(1);
 
   if(Temp > 60) Temp = 60;
   if(Humi > 90) Humi = 90;
@@ -336,18 +335,18 @@ void setup() {
 }
 //end setup
 
-long msDelay;
+// long msDelay;
 void loop() {
 
   client.loop();
-  delay(10);
+  delay(50);
 
   if (!client.connected()) connect();
   //if (WiFi.status() != WL_CONNECTED) wifiConn();
-  if(millis() - msDelay > 500){
-    msDelay = millis();
-    getAHT10();
-  }
+  // if(millis() - msDelay > 1000){
+  //   msDelay = millis();
+  //   getAHT10();
+  // }
 
   while(modeDisplay == 0){//display clock
 
@@ -402,7 +401,7 @@ void loop() {
 
         Lux = luxRead();
         //getNTP();
-        // getAHT10();
+        getAHT10();
       }
     }else Trigger = true;
 
